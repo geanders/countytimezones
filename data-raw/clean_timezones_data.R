@@ -176,4 +176,6 @@ county_df[county_df$state == "TN" &
 county_df[county_df$state == "TX" &
             county_df$county %in% paste(c("el paso", "hudspeth"),
                                         "county"), "tz"] <- "America/Denver"
-
+county_tzs <- select(county_df, fips, tz, county, state)
+library(devtools)
+use_data(county_tzs, overwrite = TRUE)
