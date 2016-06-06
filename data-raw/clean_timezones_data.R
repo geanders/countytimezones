@@ -35,6 +35,7 @@ county_df <- read.csv("http://www2.census.gov/geo/docs/reference/codes/files/nat
                       col.names = c("state", "st_fips", "ct_fips", "county", "code")) %>%
   mutate(ct_fips = sprintf("%03d", ct_fips)) %>%
   unite(fips, st_fips, ct_fips, sep = "") %>%
+  mutate(fips = as.numeric(fips)) %>%
   filter(!(state %in% c("AS", "GU", "MP", "PR", "UM", "VI")) ) %>%
   mutate(tz = sapply(state, find_state_tz),
          county = tolower(county))
