@@ -30,8 +30,9 @@ add_local_time <- function(df, date_colname){
   df$datetime <- df[ , date_colname]
   df <- dplyr::mutate_(df, fips = ~ as.numeric(fips))
   df <- dplyr::left_join(df, county_tzs, by = "fips") %>%
-    mutate(local_time = mapply(calc_single_datetime, datetime, tz = tz),
-           local_date = substring(local_time, 1, 8))
+    dplyr::mutate_(local_time = ~ mapply(calc_single_datetime,
+                                         datetime, tz = tz),
+           local_date = ~ substring(local_time, 1, 8))
   return(df)
 }
 

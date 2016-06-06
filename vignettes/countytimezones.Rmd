@@ -9,6 +9,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r echo = FALSE}
+library(countytimezones)
+```
+
+
 ## Aims of the package
 
 This package allows you to convert time from UTC to local time for US counties based on each county's FIPs code. You can use this to convert time zones in either a dataframe with all values from one county or a dataframe with values from many different time zones. 
@@ -17,7 +22,7 @@ This package allows you to convert time from UTC to local time for US counties b
 
 This package is currently under development on GitHub. It can be installed using the `devtools` package:
 
-```{r eval = FALSE}
+```{r eval = FALSE, message = FALSE}
 library(devtools)
 install_github("geanders/countytimezones")
 library(countytimezones)
@@ -27,23 +32,25 @@ library(countytimezones)
 
 As a simple example, if you want to convert 8:30 UTC on Jan. 1, 2010 to local time in counties throughout the US, you could run: 
 
-```{r}
+```{r message = FALSE}
 library(lubridate)
 data(county_tzs)
-example_df <- data.frame(fips = county_tzs$fips, 
+example_df <- data.frame(fips = county_tzs$fips,
                  datetime = ymd_hms("1999-07-01 14:30:00"))
 head(example_df)
-example_df <- add_local_time(df = ex, date_colname = "datetime")
+example_df <- add_local_time(df = example_df,
+                             date_colname = "datetime")
 head(example_df)
 ```
 
 You can use functions from the `choroplethr` package to map the local values:
 
-```{r fig.width = 8, fig.height = 5}
+```{r fig.width = 8, fig.height = 5, message = FALSE}
 library(choroplethr)
 library(ggplot2)
+library(dplyr)
 to_plot <- select(example_df, fips, local_time) %>%
-  dplyr::rename(region = fips, value = local_time)
+  rename(region = fips, value = local_time)
 a <- CountyChoropleth$new(to_plot)
 a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
 a$render()
