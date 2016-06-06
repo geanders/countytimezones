@@ -38,8 +38,10 @@ data(county_tzs)
 example_df <- data.frame(fips = county_tzs$fips,
                  datetime = ymd_hms("1999-07-01 14:30:00"))
 head(example_df)
-example_df <- add_local_time(df = example_df,
-                             date_colname = "datetime")
+example_localtime <- calc_local_time(date_time = example_df$datetime,
+                                    fips = example_df$fips)
+head(example_localtime)
+example_df <- cbind(example_df, example_localtime)
 head(example_df)
 ```
 

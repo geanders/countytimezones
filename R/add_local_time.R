@@ -21,18 +21,23 @@
 #' library(lubridate)
 #' floyd <- filter(closest_dist, storm_id == "Floyd-1999") %>%
 #'          mutate(closest_date = ymd_hm(closest_date, tz = "UTC"))
-#' floyd <- add_local_time(df = floyd, date_colname = "closest_date")
+#' floyd_datetimes <- floyd$closest_date
+#' floyd_fips <- floyd$fips
+#' floyd_localtime <- calc_local_time(date_time = floyd_datetimes,
+#'                                    fips = floyd_fips)
 #'
 #' @importFrom dplyr %>%
 #'
 #' @export
-add_local_time <- function(df, date_colname){
-  df$datetime <- df[ , date_colname]
-  df <- dplyr::mutate_(df, fips = ~ as.numeric(fips))
-  df <- dplyr::left_join(df, county_tzs, by = "fips") %>%
+calc_local_time <- function(date_time, fips){
+  df <- data.frame(date_time, fips)
+  df <- df %>%
+    dplyr::mutate_(fips = ~ as.numeric(as.character(fips))) %>%
+    dplyr::left_join(countytimezones::county_tzs, by = "fips") %>%
     dplyr::mutate_(local_time = ~ mapply(calc_single_datetime,
-                                         datetime, tz = tz),
-           local_date = ~ substring(local_time, 1, 8))
+                                         date_time, tz = tz),
+           local_date = ~ substring(local_time, 1, 8)) %>%
+    dplyr::select_(.dots = c("local_time", "local_date"))
   return(df)
 }
 
