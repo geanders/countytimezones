@@ -30,13 +30,13 @@ library(countytimezones)
 
 ## Simple example
 
-As a simple example, if you want to convert 8:30 UTC on Jan. 1, 2010 to local time in counties throughout the US, you could run: 
+As a simple example, if you want to convert 8:30 UTC on Jan. 1, 1999 to local time in counties throughout the US, you could run: 
 
 ```{r message = FALSE}
 library(lubridate)
 data(county_tzs)
 example_df <- data.frame(fips = county_tzs$fips,
-                 datetime = ymd_hms("1999-07-01 14:30:00"))
+                 datetime = ymd_hms("1999-01-01 08:30:00"))
 head(example_df)
 example_localtime <- calc_local_time(date_time = example_df$datetime,
                                     fips = example_df$fips)
@@ -47,7 +47,7 @@ head(example_df)
 
 You can use functions from the `choroplethr` package to map the local values:
 
-```{r fig.width = 8, fig.height = 5, message = FALSE}
+```{r fig.width = 7, fig.height = 5, message = FALSE}
 library(choroplethr)
 library(ggplot2)
 library(dplyr)
@@ -56,5 +56,138 @@ to_plot <- select(example_df, fips, local_time) %>%
 a <- CountyChoropleth$new(to_plot)
 a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
 a$render()
+```
+
+Here is the same map for a date-time during the summer, when many counties use Daylight Savings Time:
+
+```{r fig.width = 7, fig.height = 5}
+example_df2 <- data.frame(fips = county_tzs$fips,
+                 datetime = ymd_hms("1999-07-01 08:30:00"))
+example_localtime2 <- calc_local_time(date_time = example_df2$datetime,
+                                    fips = example_df2$fips)
+example_df2 <- cbind(example_df2, example_localtime2)
+
+to_plot <- select(example_df2, fips, local_time) %>%
+  rename(region = fips, value = local_time)
+a <- CountyChoropleth$new(to_plot)
+a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
+a$render()
+```
+
+Here's a similar example for 15:45 UTC on Feb. 12, 2012: 
+
+```{r message = FALSE}
+library(lubridate)
+data(county_tzs)
+example_df <- data.frame(fips = county_tzs$fips,
+                 datetime = ymd_hms("2012-02-12 15:45:00"))
+head(example_df)
+example_localtime <- calc_local_time(date_time = example_df$datetime,
+                                    fips = example_df$fips)
+head(example_localtime)
+example_df <- cbind(example_df, example_localtime)
+head(example_df)
+```
+
+You can use functions from the `choroplethr` package to map the local values:
+
+```{r fig.width = 7, fig.height = 5, message = FALSE}
+library(choroplethr)
+library(ggplot2)
+library(dplyr)
+to_plot <- select(example_df, fips, local_time) %>%
+  rename(region = fips, value = local_time)
+a <- CountyChoropleth$new(to_plot)
+a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
+a$render()
+```
+
+Here is the same map for a date-time during the summer, when many counties use Daylight Savings Time:
+
+```{r fig.width = 7, fig.height = 5}
+example_df2 <- data.frame(fips = county_tzs$fips,
+                 datetime = ymd_hms("2012-08-12 15:45:00"))
+example_localtime2 <- calc_local_time(date_time = example_df2$datetime,
+                                    fips = example_df2$fips)
+example_df2 <- cbind(example_df2, example_localtime2)
+
+to_plot <- select(example_df2, fips, local_time) %>%
+  rename(region = fips, value = local_time)
+a <- CountyChoropleth$new(to_plot)
+a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
+a$render()
+```
+
+## More complex example
+
+As a more complex example, the `closest_dist` data from the `hurricaneexposure` package (which can be installed from "geanders/hurricanceexposure" on GitHub) has data on the date when tropical storms were closest to US counties:
+
+```{r fig.width = 5, fig.height = 5, warning = FALSE, message = FALSE}
+# install_github("geanders/hurricaneexposure") # if you need to install the package
+library(hurricaneexposure)
+data(closest_dist)
+
+floyd <- filter(closest_dist, storm_id == "Floyd-1999")
+head(floyd)
+
+floyd_local <- calc_local_time(date_time = ymd_hm(floyd$closest_date,
+                                                  tz = "UTC"),
+                               fips = floyd$fips)
+floyd <- cbind(floyd, floyd_local)
+head(floyd)
+
+eastern_states <- c("alabama", "arkansas", "connecticut", "delaware",
+                            "district of columbia", "florida", "georgia", "illinois",
+                            "indiana", "iowa", "kansas", "kentucky", "louisiana",
+                            "maine", "maryland", "massachusetts", "michigan",
+                            "mississippi", "missouri", "new hampshire", "new jersey",
+                            "new york", "north carolina", "ohio", "oklahoma",
+                            "pennsylvania", "rhode island", "south carolina",
+                            "tennessee", "texas", "vermont", "virginia",
+                            "west virginia", "wisconsin")
+
+to_plot <- select(floyd, fips, closest_date) %>%
+  mutate(fips = as.numeric(fips),
+         closest_date = substring(closest_date, 1, 8)) %>%
+  dplyr::rename(region = fips, value = closest_date)
+a <- CountyChoropleth$new(to_plot)
+a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
+a$set_zoom(eastern_states)
+a$render()
+
+to_plot <- select(floyd, fips, local_date) %>%
+  dplyr::rename(region = fips, value = local_date) %>%
+  mutate(region = as.numeric(region))
+a <- CountyChoropleth$new(to_plot)
+a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
+a$set_zoom(eastern_states)
+a$render()
+```
+
+```{r warning = FALSE, message = FALSE, fig.width = 6, fig.height = 4}
+to_plot <- select(floyd, fips, closest_date) %>%
+  filter(substring(fips, 1, 2) %in% c("47")) %>%
+  mutate(fips = as.numeric(fips), 
+         closest_date = as.factor(substring(closest_date, 1, 10))) %>%
+  dplyr::rename(region = fips, value = closest_date) %>%
+  filter(value %in% levels(value)[2:9]) %>%
+  mutate(value = factor(value))
+a <- CountyChoropleth$new(to_plot)
+a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
+a$set_zoom(c("tennessee"))
+a$render()
+
+to_plot <- select(floyd, fips, local_time) %>%
+  filter(substring(fips, 1, 2) %in% c("47")) %>%
+  mutate(fips = as.numeric(fips), 
+         local_time = as.factor(substring(local_time, 1, 10))) %>%
+  dplyr::rename(region = fips, value = local_time) %>%
+  filter(value %in% levels(value)[2:9]) %>%
+  mutate(value = factor(value))
+a <- CountyChoropleth$new(to_plot)
+a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
+a$set_zoom(c("tennessee"))
+a$render()
+
 ```
 
