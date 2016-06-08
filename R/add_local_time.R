@@ -25,6 +25,8 @@
 #' ex_df <- data.frame(datetime = c("1999-01-01 08:00", "1999-01-01 09:00",
 #'                                  "1999-01-01 10:00"))
 #' add_local_time(df = ex_df, fips = "36061", datetime_colname = "datetime")
+#'
+#' @export
 add_local_time <- function(df, fips, datetime_colname, include_tz = TRUE){
   date_time <- df[ , datetime_colname]
   local_time <- calc_local_time(date_time = date_time, fips = fips,
