@@ -1,5 +1,19 @@
 ---
 output: github_document
+references:
+- id: morris2008
+  title: Time for the weather-- Translating Zulu
+  author:
+  - family: Morris
+    given: Doug
+  container-title: Weatherwise
+  volume: 61
+  issue: 3
+  DOI: 10.3200/WEWI.61.3.32-35
+  page: 32-35
+  type: article-journal
+  issued:
+    year: 2008
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -20,7 +34,7 @@ library(countytimezones)
 
 This package allows you to convert time from Coordinated Universal Time (UTC, also known as Zulu Time) to local time for US counties based on each county's FIPs code. You can use this to convert time zones in either a dataframe with all values from one county or a dataframe with values from many different time zones. 
 
-Many observational datasets express date-times using UTC, to ensure consistency across time zones. Examples include datasets for satellite-based and / or hourly data and aviation data [Morris Weatherwise article]. Other data is collected and aggregated based on local time (e.g., daily counts of health outcomes for a community). Thus, it is often helpful to be able to convert date-time values for observations from UTC to local time. This package allows you to make that conversion for any dataset where each observation can be associated with a US county Federal Information Processing Standard (FIPS) code. 
+Many observational datasets express date-times using UTC, to ensure consistency across time zones. Examples include datasets for satellite-based and / or hourly data and aviation data [@morris2008]. Other data is collected and aggregated based on local time (e.g., daily counts of health outcomes for a community). Thus, it is often helpful to be able to convert date-time values for observations from UTC to local time. This package allows you to make that conversion for any dataset where each observation can be associated with a US county Federal Information Processing Standard (FIPS) code. 
 
 These local time conversions take into account whether or not the county was observing Daylight Savings Time at the time of the observation. This package can be used both with datasets where all observations are from the same county and for datasets where observations are associated with a number of different counties. 
 
@@ -87,7 +101,7 @@ a$render()
 
 As a more complex example, the `closest_dist` data from the `hurricaneexposure` package (which can be installed from "geanders/hurricanceexposure" on GitHub) has data on the date when tropical storms were closest to US counties:
 
-```{r fig.width = 5, fig.height = 5, warning = FALSE, message = FALSE}
+```{r fig.width = 5, fig.height = 5, warning = FALSE, message = FALSE, eval = FALSE}
 # install_github("geanders/hurricaneexposure") # if you need to install the package
 library(hurricaneexposure)
 data(closest_dist)
@@ -129,7 +143,7 @@ a$set_zoom(eastern_states)
 a$render()
 ```
 
-```{r warning = FALSE, message = FALSE, fig.width = 6, fig.height = 4}
+```{r warning = FALSE, message = FALSE, fig.width = 6, fig.height = 4, eval = FALSE}
 to_plot <- select(floyd, fips, closest_date) %>%
   filter(substring(fips, 1, 2) %in% c("47")) %>%
   mutate(fips = as.numeric(fips), 
@@ -161,3 +175,4 @@ a$set_zoom(c("tennessee"))
 a$render()
 ```
 
+## References

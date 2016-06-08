@@ -5,7 +5,7 @@ Aims of the package
 
 This package allows you to convert time from Coordinated Universal Time (UTC, also known as Zulu Time) to local time for US counties based on each county's FIPs code. You can use this to convert time zones in either a dataframe with all values from one county or a dataframe with values from many different time zones.
 
-Many observational datasets express date-times using UTC, to ensure consistency across time zones. Examples include datasets for satellite-based and / or hourly data and aviation data \[Morris Weatherwise article\]. Other data is collected and aggregated based on local time (e.g., daily counts of health outcomes for a community). Thus, it is often helpful to be able to convert date-time values for observations from UTC to local time. This package allows you to make that conversion for any dataset where each observation can be associated with a US county Federal Information Processing Standard (FIPS) code.
+Many observational datasets express date-times using UTC, to ensure consistency across time zones. Examples include datasets for satellite-based and / or hourly data and aviation data (Morris 2008). Other data is collected and aggregated based on local time (e.g., daily counts of health outcomes for a community). Thus, it is often helpful to be able to convert date-time values for observations from UTC to local time. This package allows you to make that conversion for any dataset where each observation can be associated with a US county Federal Information Processing Standard (FIPS) code.
 
 These local time conversions take into account whether or not the county was observing Daylight Savings Time at the time of the observation. This package can be used both with datasets where all observations are from the same county and for datasets where observations are associated with a number of different counties.
 
@@ -100,31 +100,10 @@ data(closest_dist)
 
 floyd <- dplyr::filter(closest_dist, storm_id == "Floyd-1999")
 head(floyd)
-#>     storm_id  fips closest_date storm_dist
-#> 1 Floyd-1999 01001 199909151430   729.1446
-#> 2 Floyd-1999 01003 199909151200   830.7595
-#> 3 Floyd-1999 01005 199909151245   607.1626
-#> 4 Floyd-1999 01007 199909151630   796.6668
-#> 5 Floyd-1999 01009 199909151800   765.1252
-#> 6 Floyd-1999 01011 199909151330   648.6312
 
 floyd <- add_local_time(floyd, fips = floyd$fips,
                         datetime_colname = "closest_date")
 head(floyd)
-#>     storm_id  fips closest_date storm_dist       local_time local_date
-#> 1 Floyd-1999 01001 199909151430   729.1446 1999-09-15 09:30 1999-09-15
-#> 2 Floyd-1999 01003 199909151200   830.7595 1999-09-15 07:00 1999-09-15
-#> 3 Floyd-1999 01005 199909151245   607.1626 1999-09-15 07:45 1999-09-15
-#> 4 Floyd-1999 01007 199909151630   796.6668 1999-09-15 11:30 1999-09-15
-#> 5 Floyd-1999 01009 199909151800   765.1252 1999-09-15 13:00 1999-09-15
-#> 6 Floyd-1999 01011 199909151330   648.6312 1999-09-15 08:30 1999-09-15
-#>          local_tz
-#> 1 America/Chicago
-#> 2 America/Chicago
-#> 3 America/Chicago
-#> 4 America/Chicago
-#> 5 America/Chicago
-#> 6 America/Chicago
 
 eastern_states <- c("alabama", "arkansas", "connecticut", "delaware",
                             "district of columbia", "florida", "georgia", "illinois",
@@ -146,11 +125,6 @@ a <- CountyChoropleth$new(to_plot)
 a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
 a$set_zoom(eastern_states)
 a$render()
-```
-
-![](README-unnamed-chunk-7-1.png)
-
-``` r
 
 to_plot <- select(floyd, fips, local_date) %>%
   mutate(fips = as.numeric(fips))%>%
@@ -160,8 +134,6 @@ a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
 a$set_zoom(eastern_states)
 a$render()
 ```
-
-![](README-unnamed-chunk-7-2.png)
 
 ``` r
 to_plot <- select(floyd, fips, closest_date) %>%
@@ -178,11 +150,6 @@ a <- CountyChoropleth$new(to_plot)
 a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
 a$set_zoom(c("tennessee"))
 a$render()
-```
-
-![](README-unnamed-chunk-8-1.png)
-
-``` r
 
 to_plot <- select(floyd, fips, local_time) %>%
   filter(substring(fips, 1, 2) %in% c("47")) %>%
@@ -200,4 +167,7 @@ a$set_zoom(c("tennessee"))
 a$render()
 ```
 
-![](README-unnamed-chunk-8-2.png)
+References
+----------
+
+Morris, Doug. 2008. “Time for the Weather-- Translating Zulu.” *Weatherwise* 61 (3): 32–35. doi:[10.3200/WEWI.61.3.32-35](https://doi.org/10.3200/WEWI.61.3.32-35).
