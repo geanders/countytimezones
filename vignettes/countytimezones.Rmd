@@ -7,7 +7,22 @@ vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+references:
+- id: morris2008
+  title: Time for the weather-- Translating Zulu
+  author:
+  - family: Morris
+    given: Doug
+  container-title: Weatherwise
+  volume: 61
+  issue: 3
+  DOI: 10.3200/WEWI.61.3.32-35
+  page: 32-35
+  type: article-journal
+  issued:
+    year: 2008
 ---
+
 
 ```{r echo = FALSE}
 library(countytimezones)
@@ -17,9 +32,11 @@ library(countytimezones)
 
 This package allows you to convert time from Coordinated Universal Time (UTC, also known as Zulu Time) to local time for US counties based on each county's FIPs code. You can use this to convert time zones in either a dataframe with all values from one county or a dataframe with values from many different time zones. 
 
-Many observational datasets express date-times using UTC, to ensure consistency across time zones. Examples include datasets for satellite-based and / or hourly data and aviation data [Morris Weatherwise article]. Other data is collected and aggregated based on local time (e.g., daily counts of health outcomes for a community). Thus, it is often helpful to be able to convert date-time values for observations from UTC to local time. This package allows you to make that conversion for any dataset where each observation can be associated with a US county Federal Information Processing Standard (FIPS) code. 
+Many observational datasets express date-times using UTC, to ensure consistency across time zones. Examples include datasets for satellite-based and / or hourly data and aviation data [@morris2008]. Other data is collected and aggregated based on local time (e.g., daily counts of health outcomes for a community). Thus, it is often helpful to be able to convert date-time values for observations from UTC to local time. This package allows you to make that conversion for any dataset where each observation can be associated with a US county Federal Information Processing Standard (FIPS) code. 
 
 These local time conversions take into account whether or not the county was observing Daylight Savings Time at the time of the observation. This package can be used both with datasets where all observations are from the same county and for datasets where observations are associated with a number of different counties. 
+
+Some counties include multiple time zones. For these counties, this package calculates local time based on the time zone used in the majority of the county, based on land area. County time zone designations are based on Olson/IANA time zone conventions (see `?OlsonNames` for more information on these conventions).
 
 ## Accessing the package
 
@@ -32,6 +49,40 @@ library(countytimezones)
 ```
 
 ## Simple example
+
+As a very simple example, here is how you can calculate local time for a single observation in a single county: 
+
+```{r}
+calc_local_time(date_time = "1999-01-01 08:00", fips = "36061")
+```
+
+To calculate the same time in several different counties, you could run: 
+
+```{r}
+ex_fips <- c("36061", "17031", "06037")
+calc_local_time(date_time = "1999-01-01 08:00", fips = ex_fips)
+```
+
+You can also do more conversions for more complex datasets, with different date-times and counties for each observation: 
+
+```{r}
+ex_datetime <- c("1999-01-01 08:00", "1999-01-01 09:00",
+                 "1999-01-01 10:00")
+ex_fips <- c("36061", "17031", "06037")
+calc_local_time(date_time = ex_datetime, fips = ex_fips)
+```
+
+You can notice from these examples that the `calc_local_time` function calculates a new dataframe with columns for `local_time`, `local_date`, and `local_tz` (this last column can be omitted by using the option `include_tz = FALSE`). If you want to add these columns to a dataframe, rather than generating them as a separate dataframe, you can instead use the function `add_local_time`. For example: 
+
+```{r}
+ex_df <- data.frame(datetime = c("1999-01-01 08:00", "1999-01-01 09:00",
+                                 "1999-01-01 10:00"),
+                    fips = c("36061", "17031", "06037"))
+add_local_time(df = ex_df, fips = ex_df$fips,
+              datetime_colname = "datetime")
+```
+
+## More complex examples
 
 As a simple example, if you want to convert 8:30 UTC on Jan. 1, 1999 to local time in counties throughout the US, you could run: 
 
@@ -46,6 +97,8 @@ example_df <- add_local_time(df = example_df,
                              datetime_colname = "datetime")
 head(example_df)
 ```
+
+The new column of local times is given in a character class because, while this package allows you to convert a dataset with observations from many different counties to the local time of each, a date-time vector in R can only have a single time zone associated with all values. 
 
 You can use functions from the `choroplethr` package to map the local values:
 
@@ -80,20 +133,21 @@ a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
 a$render()
 ```
 
-## More complex example
+You can notice from comparing these two maps some of counties that don't follow Daylight Savings Time (e.g., Arizona and parts of Indiana, although Indiana's Daylight Savings Time policies have changed more recently).
 
-As a more complex example, the `closest_dist` data from the `hurricaneexposure` package (which can be installed from "geanders/hurricanceexposure" on GitHub) has data on the date when tropical storms were closest to US counties:
+As another more complex example, the `closest_dist` data from the `hurricaneexposure` package (which can be installed from "geanders/hurricanceexposure" on GitHub) has data on the date when tropical storms were closest to US counties:
 
-```{r fig.width = 5, fig.height = 5, warning = FALSE, message = FALSE}
+```{r fig.width = 7, fig.height = 5, warning = FALSE, message = FALSE}
 # install_github("geanders/hurricaneexposure") # if you need to install the package
 library(hurricaneexposure)
 data(closest_dist)
 
-floyd <- dplyr::filter(closest_dist, storm_id == "Floyd-1999")
+floyd <- dplyr::filter(closest_dist, storm_id == "Floyd-1999") %>%
+  select(fips, closest_time_utc)
 head(floyd)
 
 floyd <- add_local_time(floyd, fips = floyd$fips,
-                        datetime_colname = "closest_date")
+                        datetime_colname = "closest_time_utc")
 head(floyd)
 
 eastern_states <- c("alabama", "arkansas", "connecticut", "delaware",
@@ -107,11 +161,11 @@ eastern_states <- c("alabama", "arkansas", "connecticut", "delaware",
                             "west virginia", "wisconsin")
 
 library(lubridate)
-to_plot <- select(floyd, fips, closest_date) %>%
+to_plot <- select(floyd, fips, closest_time_utc) %>%
   mutate(fips = as.numeric(fips),
-         closest_date = ymd_hm(closest_date)) %>%
-  mutate(closest_date = format(closest_date, "%Y-%m-%d")) %>%
-  dplyr::rename(region = fips, value = closest_date)
+         closest_time_utc = ymd_hm(closest_time_utc)) %>%
+  mutate(closest_time_utc = format(closest_time_utc, "%Y-%m-%d")) %>%
+  dplyr::rename(region = fips, value = closest_time_utc)
 a <- CountyChoropleth$new(to_plot)
 a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
 a$set_zoom(eastern_states)
@@ -126,35 +180,5 @@ a$set_zoom(eastern_states)
 a$render()
 ```
 
-```{r warning = FALSE, message = FALSE, fig.width = 6, fig.height = 4}
-to_plot <- select(floyd, fips, closest_date) %>%
-  filter(substring(fips, 1, 2) %in% c("47")) %>%
-  mutate(fips = as.numeric(fips), 
-         closest_date = ymd_hm(closest_date)) %>%
-  mutate(closest_date = format(closest_date, "%Y-%m-%d %H")) %>%
-  mutate(closest_date = factor(closest_date)) %>%
-  dplyr::rename(region = fips, value = closest_date) %>%
-  filter(value %in% levels(value)[2:9]) %>%
-  mutate(value = factor(value))
 
-a <- CountyChoropleth$new(to_plot)
-a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
-a$set_zoom(c("tennessee"))
-a$render()
-
-to_plot <- select(floyd, fips, local_time) %>%
-  filter(substring(fips, 1, 2) %in% c("47")) %>%
-  mutate(fips = as.numeric(fips), 
-         local_time = ymd_hm(local_time)) %>%
-  mutate(local_time = format(local_time, "%Y-%m-%d %H")) %>%
-  mutate(local_time = factor(local_time)) %>%
-  dplyr::rename(region = fips, value = local_time) %>%
-  filter(value %in% levels(value)[2:9]) %>%
-  mutate(value = factor(value))
-
-a <- CountyChoropleth$new(to_plot)
-a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
-a$set_zoom(c("tennessee"))
-a$render()
-```
-
+## References
