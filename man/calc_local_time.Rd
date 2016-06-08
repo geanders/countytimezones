@@ -2,16 +2,26 @@
 % Please edit documentation in R/add_local_time.R
 \name{calc_local_time}
 \alias{calc_local_time}
-\title{Add local time from UTC for US counties}
+\title{Calculate local time from UTC for US counties}
 \usage{
-calc_local_time(date_time, fips)
+calc_local_time(date_time, fips, include_tz = TRUE)
 }
 \arguments{
-\item{df}{A dataframe with columns with county FIPS numbers (\code{fips})
-and datetime in UTC.}
+\item{date_time}{The vector of the date-time of each observation in
+Coordinated Universal Time (UTC). This vector can either have a
+\code{POSIXct} class or be a character string, with date-time given
+as four-digit year, two-digit month, two-digit day, two-digit hour,
+and two-digit minutes (with hours based on a 24-hour system). Examples
+of acceptable formats include, for the example of 1:00 PM Jan. 2 1999,
+"199901021300", "1999-01-02 13:00", and "1999/01/02 13:00".}
 
-\item{date_colname}{A character string giving the name of the column in
-the dataframe with a datetime in the UTC timezone.}
+\item{fips}{A character vector giving the 5-digit FIPS code of the county
+associated with each observation. This can be either a string of length 1
+or a vector as long as the \code{date_time} vector, if different
+observations come from different counties.}
+
+\item{include_tz}{A TRUE / FALSE value specifying whether to include a
+column with the local time zone (\code{local_tz}) in the final output.}
 }
 \value{
 This function returns the dataframe that was input, but with added
@@ -20,7 +30,17 @@ This function returns the dataframe that was input, but with added
    giving the date in the local time).
 }
 \description{
-Add local time from UTC for US counties
+This function can input date-time values in Coordinated Universal Time (UTC;
+also known as Zulu Time), along with a vector with county Federal Information
+Processing Standard (FIPS) codes, and calculates the local date-time as
+well as the local date based on th UTC date-time.
+}
+\details{
+Because this function can calculate local times for a dataframe
+that includes counties in different time zones, it outputs the local
+date-time as a character vector, rather than a date-time object, because
+it seems that a vector of date-time class can only have one associated
+time zone.
 }
 \note{
 The local time is given as a character
@@ -29,15 +49,25 @@ The local time is given as a character
    are two counties in the dataframe that are in different time zones).
 }
 \examples{
+ex_datetime <- "1999-01-01 08:00"
+ex_fips <- "36061"
+calc_local_time(date_time = ex_datetime, fips = ex_fips)
+
+ex_datetime <- c("1999-01-01 08:00", "1999-01-01 09:00",
+                 "1999-01-01 10:00")
+ex_fips <- "36061"
+calc_local_time(date_time = ex_datetime, fips = ex_fips)
+
+ex_datetime <- c("1999-01-01 08:00", "1999-01-01 09:00",
+                 "1999-01-01 10:00")
+ex_fips <- c("36061", "17031", "06037")
+calc_local_time(date_time = ex_datetime, fips = ex_fips)
+
 library(hurricaneexposure)
 data(closest_dist)
-library(lubridate)
-floyd <- filter(closest_dist, storm_id == "Floyd-1999") \%>\%
-         mutate(closest_date = ymd_hm(closest_date, tz = "UTC"))
-floyd_datetimes <- floyd$closest_date
-floyd_fips <- floyd$fips
-floyd_localtime <- calc_local_time(date_time = floyd_datetimes,
-                                   fips = floyd_fips)
+floyd <- filter(closest_dist, storm_id == "Floyd-1999")
+floyd_local <- calc_local_time(date_time = floyd$closest_date,
+                                   fips = floyd$fips)
 
 }
 

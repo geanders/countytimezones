@@ -1,9 +1,29 @@
-#' Add local time from UTC for US counties
+#' Calculate local time from UTC for US counties
 #'
-#' @param df A dataframe with columns with county FIPS numbers (\code{fips})
-#'    and datetime in UTC.
-#' @param date_colname A character string giving the name of the column in
-#'    the dataframe with a datetime in the UTC timezone.
+#' This function can input date-time values in Coordinated Universal Time (UTC;
+#' also known as Zulu Time), along with a vector with county Federal Information
+#' Processing Standard (FIPS) codes, and calculates the local date-time as
+#' well as the local date based on th UTC date-time.
+#'
+#' @details Because this function can calculate local times for a dataframe
+#' that includes counties in different time zones, it outputs the local
+#' date-time as a character vector, rather than a date-time object, because
+#' it seems that a vector of date-time class can only have one associated
+#' time zone.
+#'
+#' @param date_time The vector of the date-time of each observation in
+#'    Coordinated Universal Time (UTC). This vector can either have a
+#'    \code{POSIXct} class or be a character string, with date-time given
+#'    as four-digit year, two-digit month, two-digit day, two-digit hour,
+#'    and two-digit minutes (with hours based on a 24-hour system). Examples
+#'    of acceptable formats include, for the example of 1:00 PM Jan. 2 1999,
+#'    "199901021300", "1999-01-02 13:00", and "1999/01/02 13:00".
+#' @param fips A character vector giving the 5-digit FIPS code of the county
+#'    associated with each observation. This can be either a string of length 1
+#'    or a vector as long as the \code{date_time} vector, if different
+#'    observations come from different counties.
+#' @param include_tz A TRUE / FALSE value specifying whether to include a
+#'    column with the local time zone (\code{local_tz}) in the final output.
 #'
 #' @return This function returns the dataframe that was input, but with added
 #'    columns for \code{local_time} (a character string giving the local date
@@ -16,28 +36,51 @@
 #'    are two counties in the dataframe that are in different time zones).
 #'
 #' @examples
+#' ex_datetime <- "1999-01-01 08:00"
+#' ex_fips <- "36061"
+#' calc_local_time(date_time = ex_datetime, fips = ex_fips)
+#'
+#' ex_datetime <- c("1999-01-01 08:00", "1999-01-01 09:00",
+#'                  "1999-01-01 10:00")
+#' ex_fips <- "36061"
+#' calc_local_time(date_time = ex_datetime, fips = ex_fips)
+#'
+#' ex_datetime <- c("1999-01-01 08:00", "1999-01-01 09:00",
+#'                  "1999-01-01 10:00")
+#' ex_fips <- c("36061", "17031", "06037")
+#' calc_local_time(date_time = ex_datetime, fips = ex_fips)
+#'
 #' library(hurricaneexposure)
 #' data(closest_dist)
-#' library(lubridate)
-#' floyd <- filter(closest_dist, storm_id == "Floyd-1999") %>%
-#'          mutate(closest_date = ymd_hm(closest_date, tz = "UTC"))
-#' floyd_datetimes <- floyd$closest_date
-#' floyd_fips <- floyd$fips
-#' floyd_localtime <- calc_local_time(date_time = floyd_datetimes,
-#'                                    fips = floyd_fips)
+#' floyd <- filter(closest_dist, storm_id == "Floyd-1999")
+#' floyd_local <- calc_local_time(date_time = floyd$closest_date,
+#'                                    fips = floyd$fips)
 #'
 #' @importFrom dplyr %>%
 #'
 #' @export
-calc_local_time <- function(date_time, fips){
-  df <- data.frame(date_time, fips)
-  df <- df %>%
+calc_local_time <- function(date_time, fips, include_tz = TRUE){
+  # Convert date-time to POSIXct class if it's not already
+  if(!("POSIXct" %in% class(date_time))){
+    date_time <- lubridate::ymd_hm(date_time)
+  }
+
+  if(include_tz){
+    dots <- c("local_time", "local_date", "local_tz")
+  } else {
+    dots <- c("local_time", "local_date")
+  }
+
+  df <- data.frame(date_time, fips) %>%
     dplyr::mutate_(fips = ~ as.numeric(as.character(fips))) %>%
     dplyr::left_join(countytimezones::county_tzs, by = "fips") %>%
+    dplyr::rename_(local_tz = ~ tz) %>%
     dplyr::mutate_(local_time = ~ mapply(calc_single_datetime,
-                                         date_time, tz = tz),
-           local_date = ~ substring(local_time, 1, 8)) %>%
-    dplyr::select_(.dots = c("local_time", "local_date"))
+                                         date_time, tz = local_tz),
+                   local_time = ~ lubridate::ymd_hms(local_time),
+                   local_date = ~ format(local_time, "%Y-%m-%d"),
+                   local_time = ~ format(local_time, "%Y-%m-%d %H:%M")) %>%
+    dplyr::select_(.dots = dots)
   return(df)
 }
 
