@@ -98,12 +98,27 @@ As a more complex example, the `closest_dist` data from the `hurricaneexposure` 
 library(hurricaneexposure)
 data(closest_dist)
 
-floyd <- dplyr::filter(closest_dist, storm_id == "Floyd-1999")
+floyd <- dplyr::filter(closest_dist, storm_id == "Floyd-1999") %>%
+  select(fips, closest_time_utc)
 head(floyd)
+#>    fips closest_time_utc
+#> 1 01001 1999-09-15 14:30
+#> 2 01003 1999-09-15 12:00
+#> 3 01005 1999-09-15 12:45
+#> 4 01007 1999-09-15 16:30
+#> 5 01009 1999-09-15 18:00
+#> 6 01011 1999-09-15 13:30
 
 floyd <- add_local_time(floyd, fips = floyd$fips,
-                        datetime_colname = "closest_date")
+                        datetime_colname = "closest_time_utc")
 head(floyd)
+#>    fips closest_time_utc       local_time local_date        local_tz
+#> 1 01001 1999-09-15 14:30 1999-09-15 09:30 1999-09-15 America/Chicago
+#> 2 01003 1999-09-15 12:00 1999-09-15 07:00 1999-09-15 America/Chicago
+#> 3 01005 1999-09-15 12:45 1999-09-15 07:45 1999-09-15 America/Chicago
+#> 4 01007 1999-09-15 16:30 1999-09-15 11:30 1999-09-15 America/Chicago
+#> 5 01009 1999-09-15 18:00 1999-09-15 13:00 1999-09-15 America/Chicago
+#> 6 01011 1999-09-15 13:30 1999-09-15 08:30 1999-09-15 America/Chicago
 
 eastern_states <- c("alabama", "arkansas", "connecticut", "delaware",
                             "district of columbia", "florida", "georgia", "illinois",
@@ -116,15 +131,20 @@ eastern_states <- c("alabama", "arkansas", "connecticut", "delaware",
                             "west virginia", "wisconsin")
 
 library(lubridate)
-to_plot <- select(floyd, fips, closest_date) %>%
+to_plot <- select(floyd, fips, closest_time_utc) %>%
   mutate(fips = as.numeric(fips),
-         closest_date = ymd_hm(closest_date)) %>%
-  mutate(closest_date = format(closest_date, "%Y-%m-%d")) %>%
-  dplyr::rename(region = fips, value = closest_date)
+         closest_time_utc = ymd_hm(closest_time_utc)) %>%
+  mutate(closest_time_utc = format(closest_time_utc, "%Y-%m-%d")) %>%
+  dplyr::rename(region = fips, value = closest_time_utc)
 a <- CountyChoropleth$new(to_plot)
 a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
 a$set_zoom(eastern_states)
 a$render()
+```
+
+![](README-unnamed-chunk-7-1.png)
+
+``` r
 
 to_plot <- select(floyd, fips, local_date) %>%
   mutate(fips = as.numeric(fips))%>%
@@ -135,37 +155,7 @@ a$set_zoom(eastern_states)
 a$render()
 ```
 
-``` r
-to_plot <- select(floyd, fips, closest_date) %>%
-  filter(substring(fips, 1, 2) %in% c("47")) %>%
-  mutate(fips = as.numeric(fips), 
-         closest_date = ymd_hm(closest_date)) %>%
-  mutate(closest_date = format(closest_date, "%Y-%m-%d %H")) %>%
-  mutate(closest_date = factor(closest_date)) %>%
-  dplyr::rename(region = fips, value = closest_date) %>%
-  filter(value %in% levels(value)[2:9]) %>%
-  mutate(value = factor(value))
-
-a <- CountyChoropleth$new(to_plot)
-a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
-a$set_zoom(c("tennessee"))
-a$render()
-
-to_plot <- select(floyd, fips, local_time) %>%
-  filter(substring(fips, 1, 2) %in% c("47")) %>%
-  mutate(fips = as.numeric(fips), 
-         local_time = ymd_hm(local_time)) %>%
-  mutate(local_time = format(local_time, "%Y-%m-%d %H")) %>%
-  mutate(local_time = factor(local_time)) %>%
-  dplyr::rename(region = fips, value = local_time) %>%
-  filter(value %in% levels(value)[2:9]) %>%
-  mutate(value = factor(value))
-
-a <- CountyChoropleth$new(to_plot)
-a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
-a$set_zoom(c("tennessee"))
-a$render()
-```
+![](README-unnamed-chunk-7-2.png)
 
 References
 ----------
