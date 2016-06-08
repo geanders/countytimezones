@@ -1,3 +1,38 @@
+#' Add local time to dataset
+#'
+#' This function will input a dataframe of observations for US counties that
+#' includes a column with date-time expressed in Coordinated Universal Time
+#' (UTC), as well as a single value or vector of FIPS code(s) for the
+#' county or counties associated with the observations. It will return the
+#' original dataframe with columns added for local date-time, local date, and,
+#' if specified, local time zone.
+#'
+#' @param df A dataframe of observations that includes a column with a
+#'    date-time object in Coordinated Universal Time (UTC) (see the documentation
+#'    for the \code{\link{calc_local_time}} function to see requirements for
+#'    the format of this UTC date-time column)
+#' @param datetime_colname A character string giving the column name for the
+#'    column of the input dataframe that gives date-time in UTC.
+#' @inheritParams calc_local_time
+#'
+#' @examples
+#' ex_df <- data.frame(datetime = c("1999-01-01 08:00", "1999-01-01 09:00",
+#'                                  "1999-01-01 10:00"),
+#'                     fips = c("36061", "17031", "06037"))
+#' add_local_time(df = ex_df, fips = ex_df$fips,
+#'                datetime_colname = "datetime")
+#'
+#' ex_df <- data.frame(datetime = c("1999-01-01 08:00", "1999-01-01 09:00",
+#'                                  "1999-01-01 10:00"))
+#' add_local_time(df = ex_df, fips = "36061", datetime_colname = "datetime")
+add_local_time <- function(df, fips, datetime_colname, include_tz = TRUE){
+  date_time <- df[ , datetime_colname]
+  local_time <- calc_local_time(date_time = date_time, fips = fips,
+                                include_tz = include_tz)
+  out <- cbind(df, local_time)
+  return(out)
+}
+
 #' Calculate local time from UTC for US counties
 #'
 #' This function can input date-time values in Coordinated Universal Time (UTC;
