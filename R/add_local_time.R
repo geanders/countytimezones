@@ -86,10 +86,12 @@ calc_local_time <- function(date_time, fips, include_tz = TRUE){
 
 #' Calculate local time for a single observation
 #'
-#' @param datetime A POSIXct object in UTC timezone
-#' @param tz A character string giving the local timezone
+#' @param datetime A POSIXct object of length one expressed in Coordinated
+#'    Universal Time (UTC)
+#' @param tz A character string giving the local time zone based on the
+#'    Olson/IANA time zone names
 #'
-#' @return A character string giving the time in the local timezone
+#' @return A character string giving the time in the local time zone
 #'
 #' @note This must output the date as a character string, because otherwise
 #'    all dates will be transformed to numeric values when you run the

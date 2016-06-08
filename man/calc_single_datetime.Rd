@@ -7,12 +7,14 @@
 calc_single_datetime(datetime, tz)
 }
 \arguments{
-\item{datetime}{A POSIXct object in UTC timezone}
+\item{datetime}{A POSIXct object of length one expressed in Coordinated
+Universal Time (UTC)}
 
-\item{tz}{A character string giving the local timezone}
+\item{tz}{A character string giving the local time zone based on the
+Olson/IANA time zone names}
 }
 \value{
-A character string giving the time in the local timezone
+A character string giving the time in the local time zone
 }
 \description{
 Calculate local time for a single observation
