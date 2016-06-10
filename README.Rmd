@@ -169,7 +169,7 @@ a$render()
 
 You can use the `add_local_time` function to convert all the UTC date-times from this dataset to each county's local time:
 
-```{r}
+```{r fig.width = 7, fig.height = 5, warning = FALSE, message = FALSE}
 floyd <- add_local_time(floyd, fips = floyd$fips,
                         datetime_colname = "closest_time_utc")
 head(floyd)
