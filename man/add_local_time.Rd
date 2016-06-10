@@ -13,21 +13,22 @@ for the \code{\link{calc_local_time}} function to see requirements for
 the format of this UTC date-time column)}
 
 \item{fips}{A character vector giving the 5-digit FIPS code of the county
-associated with each observation. This can be either a string of length 1
-or a vector as long as the \code{date_time} vector, if different
-observations come from different counties.}
+associated with each observation. This can be either a string of length 1,
+if all observations come from the same county, or a vector as long as the
+\code{date_time} vector, if different observations come from different
+counties.}
 
 \item{datetime_colname}{A character string giving the column name for the
-column of the input dataframe that gives date-time in UTC.}
+column that gives date-time in UTC in the input dataframe.}
 
 \item{include_tz}{A TRUE / FALSE value specifying whether to include a
 column with the local time zone (\code{local_tz}) in the final output.}
 }
 \description{
-This function will input a dataframe of observations for US counties that
+This function inputs a dataframe of observations for US counties that
 includes a column with date-time expressed in Coordinated Universal Time
 (UTC), as well as a single value or vector of FIPS code(s) for the
-county or counties associated with the observations. It will return the
+county associated with each observation. It will return the
 original dataframe with columns added for local date-time, local date, and,
 if specified, local time zone.
 }

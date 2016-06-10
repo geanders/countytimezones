@@ -109,6 +109,7 @@ You can use functions from the `choroplethr` package to map the local values:
 
 ``` r
 library(choroplethr)
+library(choroplethrMaps)
 library(ggplot2)
 library(dplyr)
 

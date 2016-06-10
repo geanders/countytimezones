@@ -79,14 +79,11 @@ add_local_time <- function(df, fips, datetime_colname, include_tz = TRUE){
 #'    are two counties in the dataframe that are in different time zones).
 #'
 #' @examples
-#' ex_datetime <- "1999-01-01 08:00"
-#' ex_fips <- "36061"
-#' calc_local_time(date_time = ex_datetime, fips = ex_fips)
+#' calc_local_time(date_time = "1999-01-01 08:00", fips = "36061")
 #'
 #' ex_datetime <- c("1999-01-01 08:00", "1999-01-01 09:00",
 #'                  "1999-01-01 10:00")
-#' ex_fips <- "36061"
-#' calc_local_time(date_time = ex_datetime, fips = ex_fips)
+#' calc_local_time(date_time = ex_datetime, fips = "36061")
 #'
 #' ex_datetime <- c("1999-01-01 08:00", "1999-01-01 09:00",
 #'                  "1999-01-01 10:00")

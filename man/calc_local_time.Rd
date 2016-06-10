@@ -16,9 +16,10 @@ of acceptable formats include, for the example of 1:00 PM Jan. 2 1999,
 "199901021300", "1999-01-02 13:00", and "1999/01/02 13:00".}
 
 \item{fips}{A character vector giving the 5-digit FIPS code of the county
-associated with each observation. This can be either a string of length 1
-or a vector as long as the \code{date_time} vector, if different
-observations come from different counties.}
+associated with each observation. This can be either a string of length 1,
+if all observations come from the same county, or a vector as long as the
+\code{date_time} vector, if different observations come from different
+counties.}
 
 \item{include_tz}{A TRUE / FALSE value specifying whether to include a
 column with the local time zone (\code{local_tz}) in the final output.}
@@ -30,12 +31,17 @@ This function returns the dataframe that was input, but with added
    giving the date in the local time).
 }
 \description{
-This function can input date-time values in Coordinated Universal Time (UTC;
+This function inputs date-time values in Coordinated Universal Time (UTC;
 also known as Zulu Time), along with a vector with county Federal Information
 Processing Standard (FIPS) codes, and calculates the local date-time as
 well as the local date based on th UTC date-time.
 }
 \details{
+This function inputs date-time values in Coordinated Universal Time (UTC;
+also known as Zulu Time), as well as a single value or vector of FIPS code(s) for the
+county associated with each observation. It returns a dataframe with
+columns for local date-time, local date, and, if specified, local time zone.
+
 Because this function can calculate local times for a dataframe
 that includes counties in different time zones, it outputs the local
 date-time as a character vector, rather than a date-time object, because
@@ -49,14 +55,11 @@ The local time is given as a character
    are two counties in the dataframe that are in different time zones).
 }
 \examples{
-ex_datetime <- "1999-01-01 08:00"
-ex_fips <- "36061"
-calc_local_time(date_time = ex_datetime, fips = ex_fips)
+calc_local_time(date_time = "1999-01-01 08:00", fips = "36061")
 
 ex_datetime <- c("1999-01-01 08:00", "1999-01-01 09:00",
                  "1999-01-01 10:00")
-ex_fips <- "36061"
-calc_local_time(date_time = ex_datetime, fips = ex_fips)
+calc_local_time(date_time = ex_datetime, fips = "36061")
 
 ex_datetime <- c("1999-01-01 08:00", "1999-01-01 09:00",
                  "1999-01-01 10:00")
