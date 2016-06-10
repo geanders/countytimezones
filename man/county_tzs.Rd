@@ -33,7 +33,10 @@ Some counties cover more than one time zone designation. For
 example, parts of Coconino, Navajo, and Apache Counties in Arizona
 follow Daylight Savings Time, while other parts of the county do not. We
 tried to designate county-level time zones based on the time zone used in
-the majority of the county, based on county land area.
+the majority of the county, based on county land area. When aggregating from
+multiple monitors in a county, the time zone should be left in UTC until data
+is aggregated, then the final value can be converted to local time, rather
+than converting to local time before aggregating across a county.
 
 Currently, the dataset does not destinguish between the time zone
 designations "America/Anchorage" and "America/Nome". If you are using this

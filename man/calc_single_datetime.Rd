@@ -2,7 +2,7 @@
 % Please edit documentation in R/add_local_time.R
 \name{calc_single_datetime}
 \alias{calc_single_datetime}
-\title{Calculate local time for a single observation}
+\title{Convert UTC to local time for a single observation}
 \usage{
 calc_single_datetime(datetime, tz)
 }
@@ -14,18 +14,18 @@ Universal Time (UTC)}
 Olson/IANA time zone names}
 }
 \value{
-A character string giving the time in the local time zone
+A character string giving the date-time in the local time zone
 }
 \description{
-Calculate local time for a single observation
-}
-\note{
-This must output the date as a character string, because otherwise
-   all dates will be transformed to numeric values when you run the
-   function through and \code{apply} function.
+This function calculated the local date-time for an observation based on a
+date-time in Coordinated Universal Time (UTC). The function provides a
+wrapper for the \code{with_tz} function form the \code{lubridate} package.
+It converts output from the \code{with_tz} function to a character vector
+so other functions in this package can be applied without error to
+with a dataframe with observations from multiple time zones to local time.
 }
 \examples{
-utc_time <- as.POSIXct("1999-09-15 14:30:00", tz = "GMT")
+utc_time <- as.POSIXct("1999-09-15 14:30:00", tz = "UTC")
 local_time <- calc_single_datetime(utc_time, tz = "US/Eastern")
 
 }

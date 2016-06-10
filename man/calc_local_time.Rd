@@ -25,10 +25,8 @@ counties.}
 column with the local time zone (\code{local_tz}) in the final output.}
 }
 \value{
-This function returns the dataframe that was input, but with added
-   columns for \code{local_time} (a character string giving the local date
-   in the format "\%Y\%m\%d\%H\%m\%s") and \code{local_date} (a Date object
-   giving the date in the local time).
+This function returns a dataframe with columns for local date-time,
+   local date, and, if specified, local time zone.
 }
 \description{
 This function inputs date-time values in Coordinated Universal Time (UTC;
@@ -41,12 +39,6 @@ This function inputs date-time values in Coordinated Universal Time (UTC;
 also known as Zulu Time), as well as a single value or vector of FIPS code(s) for the
 county associated with each observation. It returns a dataframe with
 columns for local date-time, local date, and, if specified, local time zone.
-
-Because this function can calculate local times for a dataframe
-that includes counties in different time zones, it outputs the local
-date-time as a character vector, rather than a date-time object, because
-it seems that a vector of date-time class can only have one associated
-time zone.
 }
 \note{
 The local time is given as a character
@@ -65,5 +57,6 @@ ex_datetime <- c("1999-01-01 08:00", "1999-01-01 09:00",
                  "1999-01-01 10:00")
 ex_fips <- c("36061", "17031", "06037")
 calc_local_time(date_time = ex_datetime, fips = ex_fips)
+
 }
 

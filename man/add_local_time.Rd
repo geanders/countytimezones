@@ -24,6 +24,11 @@ column that gives date-time in UTC in the input dataframe.}
 \item{include_tz}{A TRUE / FALSE value specifying whether to include a
 column with the local time zone (\code{local_tz}) in the final output.}
 }
+\value{
+This function returns the dataframe input to the function, with
+   columns added with local date-time, local date, and, if specified, local
+   time zone.
+}
 \description{
 This function inputs a dataframe of observations for US counties that
 includes a column with date-time expressed in Coordinated Universal Time

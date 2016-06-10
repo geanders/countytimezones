@@ -15,6 +15,10 @@
 #'    column that gives date-time in UTC in the input dataframe.
 #' @inheritParams calc_local_time
 #'
+#' @return This function returns the dataframe input to the function, with
+#'    columns added with local date-time, local date, and, if specified, local
+#'    time zone.
+#'
 #' @examples
 #' ex_df <- data.frame(datetime = c("1999-01-01 08:00", "1999-01-01 09:00",
 #'                                  "1999-01-01 10:00"),
@@ -47,12 +51,6 @@ add_local_time <- function(df, fips, datetime_colname, include_tz = TRUE){
 #' county associated with each observation. It returns a dataframe with
 #' columns for local date-time, local date, and, if specified, local time zone.
 #'
-#' @details Because this function can calculate local times for a dataframe
-#' that includes counties in different time zones, it outputs the local
-#' date-time as a character vector, rather than a date-time object, because
-#' it seems that a vector of date-time class can only have one associated
-#' time zone.
-#'
 #' @param date_time The vector of the date-time of each observation in
 #'    Coordinated Universal Time (UTC). This vector can either have a
 #'    \code{POSIXct} class or be a character string, with date-time given
@@ -68,10 +66,8 @@ add_local_time <- function(df, fips, datetime_colname, include_tz = TRUE){
 #' @param include_tz A TRUE / FALSE value specifying whether to include a
 #'    column with the local time zone (\code{local_tz}) in the final output.
 #'
-#' @return This function returns the dataframe that was input, but with added
-#'    columns for \code{local_time} (a character string giving the local date
-#'    in the format "\%Y\%m\%d\%H\%m\%s") and \code{local_date} (a Date object
-#'    giving the date in the local time).
+#' @return This function returns a dataframe with columns for local date-time,
+#'    local date, and, if specified, local time zone.
 #'
 #' @note The local time is given as a character
 #'    string, rather than a POSIXct object, so that it can have different time
@@ -89,6 +85,7 @@ add_local_time <- function(df, fips, datetime_colname, include_tz = TRUE){
 #'                  "1999-01-01 10:00")
 #' ex_fips <- c("36061", "17031", "06037")
 #' calc_local_time(date_time = ex_datetime, fips = ex_fips)
+#'
 #' @importFrom dplyr %>%
 #'
 #' @export
@@ -117,21 +114,24 @@ calc_local_time <- function(date_time, fips, include_tz = TRUE){
   return(df)
 }
 
-#' Calculate local time for a single observation
+#' Convert UTC to local time for a single observation
+#'
+#' This function calculated the local date-time for an observation based on a
+#' date-time in Coordinated Universal Time (UTC). The function provides a
+#' wrapper for the \code{with_tz} function form the \code{lubridate} package.
+#' It converts output from the \code{with_tz} function to a character vector
+#' so other functions in this package can be applied without error to
+#' with a dataframe with observations from multiple time zones to local time.
 #'
 #' @param datetime A POSIXct object of length one expressed in Coordinated
 #'    Universal Time (UTC)
 #' @param tz A character string giving the local time zone based on the
 #'    Olson/IANA time zone names
 #'
-#' @return A character string giving the time in the local time zone
-#'
-#' @note This must output the date as a character string, because otherwise
-#'    all dates will be transformed to numeric values when you run the
-#'    function through and \code{apply} function.
+#' @return A character string giving the date-time in the local time zone
 #'
 #' @examples
-#' utc_time <- as.POSIXct("1999-09-15 14:30:00", tz = "GMT")
+#' utc_time <- as.POSIXct("1999-09-15 14:30:00", tz = "UTC")
 #' local_time <- calc_single_datetime(utc_time, tz = "US/Eastern")
 #'
 #' @export
