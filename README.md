@@ -9,7 +9,7 @@ Many observational datasets express date-times using UTC, to ensure consistency 
 
 These local time conversions take into account whether or not the county was observing Daylight Savings Time at the time of the observation. This package can be used both with datasets where all observations are from the same county and for datasets where observations are associated with a number of different counties.
 
-Some counties include multiple time zones. For these counties, this package calculates local time based on the time zone used in the majority of the county, based on land area. County time zone designations are based on Olson/IANA time zone conventions (see `?OlsonNames` for more information on these conventions).
+Some counties include multiple time zones. For these counties, this package calculates local time based on the time zone used in the majority of the county, based on land area. County time zone designations are based on Olson/IANA time zone conventions (see `?OlsonNames` for more information on these conventions). Because some counties have more than one time zone, if you are aggregating data from monitors across a county, you should keep observations in UTC until all aggregating is complete and then convert the final, aggregated value to local time, rather than converting to local time before aggregation.
 
 Accessing the package
 ---------------------
@@ -18,7 +18,6 @@ This package is currently under development on GitHub. It can be installed using
 
 ``` r
 library(devtools)
-install_github("geanders/countytimezones")
 library(countytimezones)
 ```
 
@@ -143,15 +142,10 @@ a$render()
 
 You can notice from comparing these two maps some of counties that don't follow Daylight Savings Time (e.g., Arizona and parts of Indiana, although Indiana's Daylight Savings Time policies have changed more recently).
 
-As another more complex example, the `closest_dist` data from the `hurricaneexposure` package (which can be installed from "geanders/hurricanceexposure" on GitHub) has data on the date when tropical storms were closest to US counties:
+As another more complex example, the `floyd` example data that comes with this package has data on the date and time when Hurricane Floyd was closest to eastern US counties:
 
 ``` r
-# install_github("geanders/hurricaneexposure") # if you need to install the package
-library(hurricaneexposure)
-data(closest_dist)
-
-floyd <- dplyr::filter(closest_dist, storm_id == "Floyd-1999") %>%
-  select(fips, closest_time_utc)
+data(floyd)
 head(floyd)
 #>    fips closest_time_utc
 #> 1 01001 1999-09-15 14:30
@@ -160,17 +154,6 @@ head(floyd)
 #> 4 01007 1999-09-15 16:30
 #> 5 01009 1999-09-15 18:00
 #> 6 01011 1999-09-15 13:30
-
-floyd <- add_local_time(floyd, fips = floyd$fips,
-                        datetime_colname = "closest_time_utc")
-head(floyd)
-#>    fips closest_time_utc       local_time local_date        local_tz
-#> 1 01001 1999-09-15 14:30 1999-09-15 09:30 1999-09-15 America/Chicago
-#> 2 01003 1999-09-15 12:00 1999-09-15 07:00 1999-09-15 America/Chicago
-#> 3 01005 1999-09-15 12:45 1999-09-15 07:45 1999-09-15 America/Chicago
-#> 4 01007 1999-09-15 16:30 1999-09-15 11:30 1999-09-15 America/Chicago
-#> 5 01009 1999-09-15 18:00 1999-09-15 13:00 1999-09-15 America/Chicago
-#> 6 01011 1999-09-15 13:30 1999-09-15 08:30 1999-09-15 America/Chicago
 
 eastern_states <- c("alabama", "arkansas", "connecticut", "delaware",
                             "district of columbia", "florida", "georgia", "illinois",
@@ -196,7 +179,19 @@ a$render()
 
 ![](README-unnamed-chunk-11-1.png)
 
+You can use the `add_local_time` function to convert all the UTC date-times from this dataset to each county's local time:
+
 ``` r
+floyd <- add_local_time(floyd, fips = floyd$fips,
+                        datetime_colname = "closest_time_utc")
+head(floyd)
+#>    fips closest_time_utc       local_time local_date        local_tz
+#> 1 01001 1999-09-15 14:30 1999-09-15 09:30 1999-09-15 America/Chicago
+#> 2 01003 1999-09-15 12:00 1999-09-15 07:00 1999-09-15 America/Chicago
+#> 3 01005 1999-09-15 12:45 1999-09-15 07:45 1999-09-15 America/Chicago
+#> 4 01007 1999-09-15 16:30 1999-09-15 11:30 1999-09-15 America/Chicago
+#> 5 01009 1999-09-15 18:00 1999-09-15 13:00 1999-09-15 America/Chicago
+#> 6 01011 1999-09-15 13:30 1999-09-15 08:30 1999-09-15 America/Chicago
 
 to_plot <- select(floyd, fips, local_date) %>%
   mutate(fips = as.numeric(fips))%>%
@@ -207,7 +202,7 @@ a$set_zoom(eastern_states)
 a$render()
 ```
 
-![](README-unnamed-chunk-11-2.png)
+![](README-unnamed-chunk-12-1.png)
 
 References
 ----------
