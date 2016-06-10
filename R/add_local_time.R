@@ -86,13 +86,6 @@ add_local_time <- function(df, fips, datetime_colname, include_tz = TRUE){
 #'                  "1999-01-01 10:00")
 #' ex_fips <- c("36061", "17031", "06037")
 #' calc_local_time(date_time = ex_datetime, fips = ex_fips)
-#'
-#' library(hurricaneexposure)
-#' data(closest_dist)
-#' floyd <- filter(closest_dist, storm_id == "Floyd-1999")
-#' floyd_local <- calc_local_time(date_time = floyd$closest_date,
-#'                                    fips = floyd$fips)
-#'
 #' @importFrom dplyr %>%
 #'
 #' @export
