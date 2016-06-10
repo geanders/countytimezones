@@ -23,7 +23,6 @@ Depends:
 Suggests:
     choroplethr,
     ggplot2,
-    hurricaneexposure,
     knitr,
     rmarkdown
 VignetteBuilder: knitr
