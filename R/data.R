@@ -36,3 +36,23 @@
 #'
 #' @seealso \code{\link{OlsonNames}}
 "county_tzs"
+
+#' Date-times for Hurricane Floyd
+#'
+#' A dataframe that gives the date-time, in Coordinated Universal Time (UTC),
+#' for when Hurricane Floyd was closest to each county in the Eastern United
+#' States.
+#'
+#' @format: A dataframe with 2,396 rows and 2 variables:
+#' \describe{
+#'  \item{fips}{A numeric vector giving the county's four- or five-digit
+#'               Federal Information Processing Standard (FIPS) code}
+#'  \item{closest_time_utc}{The date and time, in UTC, when Hurricane Floyd
+#'                          was closest to the county (based on a storm
+#'                          track interpolated to 15 minute observations)}
+#' }
+#'
+#' @source
+#'
+#' https://github.com/geanders/hurricaneexposure/tree/master/data
+"floyd"

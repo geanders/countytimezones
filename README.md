@@ -1,4 +1,6 @@
 
+[![Travis-CI Build Status](https://travis-ci.org/geanders/countytimezones.svg?branch=master)](https://travis-ci.org/geanders/countytimezones)
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 Aims of the package
 -------------------
