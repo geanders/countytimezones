@@ -107,6 +107,7 @@ You can use functions from the `choroplethr` package to map the local values:
 
 ```{r fig.width = 7, fig.height = 5, message = FALSE}
 library(choroplethr)
+library(choroplethrMaps)
 library(ggplot2)
 library(dplyr)
 
