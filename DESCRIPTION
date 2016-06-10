@@ -25,6 +25,6 @@ Suggests:
     choroplethr (>= 3.5.2),
     choroplethrMaps (>= 1.0),
     ggplot2 (>= 2.1.0),
-    knitr (>= 1.13.1),
-    rmarkdown (>= 0.9.6.11)
+    knitr,
+    rmarkdown
 VignetteBuilder: knitr
