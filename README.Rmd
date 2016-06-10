@@ -32,13 +32,13 @@ library(countytimezones)
 
 ## Aims of the package
 
-This package allows you to convert time from Coordinated Universal Time (UTC, also known as Zulu Time) to local time for US counties based on each county's FIPs code. You can use this to convert time zones in either a dataframe with all values from one county or a dataframe with values from many different time zones. 
+This package allows you to convert time from Coordinated Universal Time (UTC, also known as Zulu Time) to local time for US counties, based on each county's FIPs code. You can use this to convert time zones in dataframes where all observations are from one county, or also in a dataframe where observations come from from many different counties. 
 
-Many observational datasets express date-times using UTC, to ensure consistency across time zones. Examples include datasets for satellite-based and / or hourly data and aviation data [@morris2008]. Other data is collected and aggregated based on local time (e.g., daily counts of health outcomes for a community). Thus, it is often helpful to be able to convert date-time values for observations from UTC to local time. This package allows you to make that conversion for any dataset where each observation can be associated with a US county Federal Information Processing Standard (FIPS) code. 
+Many observational datasets express date-times using UTC, to ensure consistency across time zones. Examples include datasets for satellite-based or hourly weather data and aviation data [@morris2008]. It is often helpful to be able to convert date-time values for observations from UTC to local time, especially when combining with data measured or aggregated using local time (e.g., daily counts of health outcomes). This package allows you to make that conversion in a dataset, as long as each observation is associated with a US county Federal Information Processing Standard (FIPS) code. County time zone designations are based on Olson/IANA time zone conventions (see `?OlsonNames` for more information on these conventions). 
 
 These local time conversions take into account whether or not the county was observing Daylight Savings Time at the time of the observation. This package can be used both with datasets where all observations are from the same county and for datasets where observations are associated with a number of different counties. 
 
-Some counties include multiple time zones. For these counties, this package calculates local time based on the time zone used in the majority of the county, based on land area. County time zone designations are based on Olson/IANA time zone conventions (see `?OlsonNames` for more information on these conventions). Because some counties have more than one time zone, if you are aggregating data from monitors across a county, you should keep observations in UTC until all aggregating is complete and then convert the final, aggregated value to local time, rather than converting to local time before aggregation.
+Some counties include multiple time zones. For these counties, the package calculates local time based on the time zone used in the majority of the county, based on land area. Because some counties have more than one time zone, if you are aggregating data from monitors across a county, you should keep observations in UTC until all aggregating is complete and then convert the final, aggregated value to local time, rather than converting to local time before aggregation.
 
 ## Accessing the package
 
@@ -57,14 +57,16 @@ As a very simple example, here is how you can calculate local time for a single 
 calc_local_time(date_time = "1999-01-01 08:00", fips = "36061")
 ```
 
-To calculate the same time in several different counties, you could run: 
+The column of local times is given in a character class because, while this package allows you to convert a dataset with observations from many different counties to the local time of each, a date-time vector in R can only have a single time zone associated with all values. 
+
+To calculate the same time in several different counties, you can run: 
 
 ```{r}
 ex_fips <- c("36061", "17031", "06037")
 calc_local_time(date_time = "1999-01-01 08:00", fips = ex_fips)
 ```
 
-You can also do more conversions for more complex datasets, with different date-times and counties for each observation: 
+You can also do conversions for more complex datasets, with different date-times and counties for each observation: 
 
 ```{r}
 ex_datetime <- c("1999-01-01 08:00", "1999-01-01 09:00",
@@ -73,7 +75,7 @@ ex_fips <- c("36061", "17031", "06037")
 calc_local_time(date_time = ex_datetime, fips = ex_fips)
 ```
 
-You can notice from these examples that the `calc_local_time` function calculates a new dataframe with columns for `local_time`, `local_date`, and `local_tz` (this last column can be omitted by using the option `include_tz = FALSE`). If you want to add these columns to a dataframe, rather than generating them as a separate dataframe, you can instead use the function `add_local_time`. For example: 
+From these examples, you can see that the `calc_local_time` function calculates a new dataframe with columns for `local_time`, `local_date`, and `local_tz` (this last column can be omitted by using the option `include_tz = FALSE`). If you want to add these columns to a dataframe, rather than generating them as a separate dataframe, you can instead use the function `add_local_time`. For example: 
 
 ```{r}
 ex_df <- data.frame(datetime = c("1999-01-01 08:00", "1999-01-01 09:00",
@@ -85,7 +87,7 @@ add_local_time(df = ex_df, fips = ex_df$fips,
 
 ## More complex examples
 
-As a simple example, if you want to convert 8:30 UTC on Jan. 1, 1999 to local time in counties throughout the US, you could run: 
+If you want to convert 8:30 UTC on Jan. 1, 1999 to local time in counties throughout the US, you could use the collection of FIPS codes from the `county_tz` dataset included with the package and run: 
 
 ```{r message = FALSE}
 data(county_tzs)
@@ -98,8 +100,6 @@ example_df <- add_local_time(df = example_df,
                              datetime_colname = "datetime")
 head(example_df)
 ```
-
-The new column of local times is given in a character class because, while this package allows you to convert a dataset with observations from many different counties to the local time of each, a date-time vector in R can only have a single time zone associated with all values. 
 
 You can use functions from the `choroplethr` package to map the local values:
 
@@ -134,7 +134,7 @@ a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
 a$render()
 ```
 
-You can notice from comparing these two maps some of counties that don't follow Daylight Savings Time (e.g., Arizona and parts of Indiana, although Indiana's Daylight Savings Time policies have changed more recently).
+From comparing these two maps, you can see some of counties that don't follow Daylight Savings Time (e.g., Arizona and parts of Indiana, although Indiana's Daylight Savings Time policies have changed more recently).
 
 As another more complex example, the `floyd` example data that comes with this package has data on the date and time when Hurricane Floyd was closest to eastern US counties:
 
