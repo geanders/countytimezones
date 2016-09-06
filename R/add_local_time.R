@@ -90,12 +90,15 @@ add_local_time <- function(df, fips, datetime_colname, include_tz = TRUE){
 #'
 #' @export
 calc_local_time <- function(date_time, fips, include_tz = TRUE){
-  wrong_fips <- fips[!(as.numeric(fips) %in% countytimezones::county_tzs$fips)]
+  fips <- as.numeric(as.character(fips))
+
+  wrong_fips <- fips[!(fips %in% countytimezones::county_tzs$fips)]
   if(length(wrong_fips) > 0){
     warning(paste("The following FIPS did not match values in our dataset:",
                   paste(wrong_fips, collapse = ", ")))
+    fips <- fips[(fips %in% countytimezones::county_tzs$fips)]
   }
-  fips <- fips[(as.numeric(fips) %in% countytimezones::county_tzs$fips)]
+
 
 
   # Convert date-time to POSIXct class if it's not already
