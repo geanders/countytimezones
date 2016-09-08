@@ -22,7 +22,7 @@ find_state_tz <- function(state){
     tz <- "Pacific/Honolulu"
   } else if(state %in% "ID"){
     tz <- "America/Boise"
-  } else if(state %in% "IN"){co
+  } else if(state %in% "IN"){
     tz <- "America/Indiana/Indianapolis"
   }
   return(tz)
