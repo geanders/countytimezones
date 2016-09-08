@@ -1,6 +1,6 @@
 ## Starting with US Census data
 ## Using info from http://www.statoids.com/tus.html on which counties are in which
-## time zone.
+## time zone
 ## Updated to be based on http://efele.net/maps/tz/us/
 find_state_tz <- function(state){
   if(state %in% c("AL", "AR", "IL", "IA", "KS", "LA", "MN", "MS", "MO",
@@ -22,7 +22,7 @@ find_state_tz <- function(state){
     tz <- "Pacific/Honolulu"
   } else if(state %in% "ID"){
     tz <- "America/Boise"
-  } else if(state %in% "IN"){
+  } else if(state %in% "IN"){co
     tz <- "America/Indiana/Indianapolis"
   }
   return(tz)
@@ -60,6 +60,9 @@ county_df[county_df$state == "AK" &
                                     "prince of wales-hyder census area"),
           "tz"] <- "America/Sitka"
 # Need "Alaska/Nome" for west of 162 degrees
+county_df[county_df$state == "AZ" &
+            county_df$county %in% paste(c("apache","coconino","navajo"),
+                                        "county"), "tz"] <- "America/Chicago"
 county_df[county_df$state == "FL" &
             county_df$county %in% paste(c("bay", "calhoun", "escambia", "gulf",
                                           "holmes", "jackson", "okaloosa",
@@ -156,7 +159,7 @@ county_df[county_df$state == "ND" &
                                         "county"), "tz"] <- "America/North_Dakota/Beulah"
 county_df[county_df$state == "OR" &
             county_df$county %in% paste(c("malheur"),
-                                        "county"), "tz"] <- "America/Boise"
+                                        "county"), "tz"] <- "America/Denver"
 county_df[county_df$state == "SD" &
             county_df$county %in% paste(c("bennett", "butte", "corson", "custer",
                                           "dewey", "fall river", "haakon", "harding",
