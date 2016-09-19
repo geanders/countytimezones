@@ -93,11 +93,18 @@ calc_local_time <- function(date_time, fips, include_tz = TRUE){
   fips <- as.numeric(as.character(fips))
 
   wrong_fips <- fips[!(fips %in% countytimezones::county_tzs$fips)]
-  if(length(wrong_fips) > 0){
-    warning(paste("The following FIPS did not match values in our dataset:",
-                  paste(wrong_fips, collapse = ", ")))
+ if(!nchar(fips) == 5 ){
+    warning(paste("The following FIPS did not match the five-character format:",
+                  paste(fips,collapse = ", ")))
     fips <- fips[(fips %in% countytimezones::county_tzs$fips)]
-  }
+ } else {
+   if (length(wrong_fips) > 0){
+   warning(paste("The following FIPS did not match values in our dataset:",
+                 paste(wrong_fips, collapse = ", ")))
+   fips <- fips[(fips %in% countytimezones::county_tzs$fips)]
+   }
+ }
+
 
 
 
