@@ -103,6 +103,16 @@ calc_local_time <- function(date_time, fips, include_tz = TRUE){
                  paste(wrong_fips, collapse = ", ")))
    fips <- fips[(fips %in% countytimezones::county_tzs$fips)]
    }
+
+
+
+   convert.to.date <- function(dt) {
+     dt <- strptime(dt, '%Y-%m-%d %H:%M')
+     if(is.na(dt)) stop("Format incorrect")
+     return(dt)
+   }
+
+   convert.to.date(date_time)
  }
 
 
