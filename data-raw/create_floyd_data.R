@@ -1,4 +1,4 @@
-library(hurricaneexposure)
+library(hurricaneexposuredata)
 library(dplyr)
 library(devtools)
 data(closest_dist)
