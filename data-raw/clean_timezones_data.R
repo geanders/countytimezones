@@ -156,7 +156,7 @@ county_df[county_df$state == "ND" &
                                         "county"), "tz"] <- "America/North_Dakota/Beulah"
 county_df[county_df$state == "OR" &
             county_df$county %in% paste(c("malheur"),
-                                        "county"), "tz"] <- "America/Denver"
+                                        "county"), "tz"] <- "America/Boise"
 county_df[county_df$state == "SD" &
             county_df$county %in% paste(c("bennett", "butte", "corson", "custer",
                                           "dewey", "fall river", "haakon", "harding",
