@@ -60,9 +60,6 @@ county_df[county_df$state == "AK" &
                                     "prince of wales-hyder census area"),
           "tz"] <- "America/Sitka"
 # Need "Alaska/Nome" for west of 162 degrees
-county_df[county_df$state == "AZ" &
-            county_df$county %in% paste(c("apache","coconino","navajo"),
-                                        "county"), "tz"] <- "America/Chicago"
 county_df[county_df$state == "FL" &
             county_df$county %in% paste(c("bay", "calhoun", "escambia", "gulf",
                                           "holmes", "jackson", "okaloosa",
