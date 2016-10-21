@@ -39,10 +39,17 @@ Some counties include multiple time zones. For these counties, the package calcu
 
 ## Accessing the package
 
-This package is currently under development on GitHub. It can be installed using the `devtools` package:
+A stable version of this package is available on CRAN and can be installed directly from there: 
 
-```{r eval = FALSE, message = FALSE}
+```{r eval = FALSE}
+install.packages("countytimezones")
+```
+
+The lastest development version of the package can also be loaded directly from GitHub using the `devtools` package:
+
+```{r eval = FALSE}
 library(devtools)
+install_github("geanders/countytimezones")
 library(countytimezones)
 ```
 
@@ -136,10 +143,12 @@ From comparing these two maps, you can see some of counties that don't follow Da
 
 As another more complex example, the `floyd` example data that comes with this package has data on the date and time when Hurricane Floyd was closest to eastern US counties:
 
-```{r fig.width = 7, fig.height = 5, warning = FALSE, message = FALSE}
+```{r}
 data(floyd)
 head(floyd)
+```
 
+```{r fig.width = 7, fig.height = 5, warning = FALSE, message = FALSE}
 eastern_states <- c("alabama", "arkansas", "connecticut", "delaware",
                             "district of columbia", "florida", "georgia", "illinois",
                             "indiana", "iowa", "kansas", "kentucky", "louisiana",
@@ -164,11 +173,13 @@ a$render()
 
 You can use the `add_local_time` function to convert all the UTC date-times from this dataset to each county's local time:
 
-```{r fig.width = 7, fig.height = 5, warning = FALSE, message = FALSE}
+```{r}
 floyd <- add_local_time(floyd, fips = floyd$fips,
                         datetime_colname = "closest_time_utc")
 head(floyd)
+```
 
+```{r fig.width = 7, fig.height = 5, warning = FALSE, message = FALSE}
 to_plot <- select(floyd, fips, local_date) %>%
   mutate(fips = as.numeric(fips))%>%
   dplyr::rename(region = fips, value = local_date)
