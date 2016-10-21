@@ -4,7 +4,9 @@ Title: Convert from UTC to Local Time for United States Counties
 Version: 0.1.1
 Date: 2016-10-21
 Authors@R: c(person("Brooke", "Anderson",
-    email = "brooke.anderson@colostate.edu", role = c("aut", "cre")))
+    email = "brooke.anderson@colostate.edu", role = c("aut", "cre")),
+    person("Zhiming", "Guo",
+    email = "gzmkobe@gmail.com", role = c("ctb")))
 Description: Inputs date-times in Coordinated Universal Time (UTC)
     and converts to a local date-time and local date for US counties, based on
     each county's Federal Information Processing Standard (FIPS) code.
