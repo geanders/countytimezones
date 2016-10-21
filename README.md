@@ -16,10 +16,17 @@ Some counties include multiple time zones. For these counties, the package calcu
 Accessing the package
 ---------------------
 
-This package is currently under development on GitHub. It can be installed using the `devtools` package:
+A stable version of this package is available on CRAN and can be installed directly from there:
+
+``` r
+install.packages("countytimezones")
+```
+
+The lastest development version of the package can also be loaded directly from GitHub using the `devtools` package:
 
 ``` r
 library(devtools)
+install_github("geanders/countytimezones")
 library(countytimezones)
 ```
 
@@ -122,7 +129,7 @@ a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
 a$render()
 ```
 
-![](README-unnamed-chunk-9-1.png)
+![](README-unnamed-chunk-10-1.png)
 
 Here is the same map for a date-time during the summer, when many counties use Daylight Savings Time:
 
@@ -141,7 +148,7 @@ a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
 a$render()
 ```
 
-![](README-unnamed-chunk-10-1.png)
+![](README-unnamed-chunk-11-1.png)
 
 From comparing these two maps, you can see some of counties that don't follow Daylight Savings Time (e.g., Arizona and parts of Indiana, although Indiana's Daylight Savings Time policies have changed more recently).
 
@@ -151,13 +158,15 @@ As another more complex example, the `floyd` example data that comes with this p
 data(floyd)
 head(floyd)
 #>    fips closest_time_utc
-#> 1 01001 1999-09-15 14:30
-#> 2 01003 1999-09-15 12:00
-#> 3 01005 1999-09-15 12:45
-#> 4 01007 1999-09-15 16:30
-#> 5 01009 1999-09-15 18:00
-#> 6 01011 1999-09-15 13:30
+#> 1 01001 1999-09-15 21:15
+#> 2 01003 1999-09-15 17:30
+#> 3 01005 1999-09-15 20:00
+#> 4 01007 1999-09-15 22:00
+#> 5 01009 1999-09-16 00:15
+#> 6 01011 1999-09-15 20:30
+```
 
+``` r
 eastern_states <- c("alabama", "arkansas", "connecticut", "delaware",
                             "district of columbia", "florida", "georgia", "illinois",
                             "indiana", "iowa", "kansas", "kentucky", "louisiana",
@@ -180,7 +189,7 @@ a$set_zoom(eastern_states)
 a$render()
 ```
 
-![](README-unnamed-chunk-11-1.png)
+![](README-unnamed-chunk-13-1.png)
 
 You can use the `add_local_time` function to convert all the UTC date-times from this dataset to each county's local time:
 
@@ -189,13 +198,15 @@ floyd <- add_local_time(floyd, fips = floyd$fips,
                         datetime_colname = "closest_time_utc")
 head(floyd)
 #>    fips closest_time_utc       local_time local_date        local_tz
-#> 1 01001 1999-09-15 14:30 1999-09-15 09:30 1999-09-15 America/Chicago
-#> 2 01003 1999-09-15 12:00 1999-09-15 07:00 1999-09-15 America/Chicago
-#> 3 01005 1999-09-15 12:45 1999-09-15 07:45 1999-09-15 America/Chicago
-#> 4 01007 1999-09-15 16:30 1999-09-15 11:30 1999-09-15 America/Chicago
-#> 5 01009 1999-09-15 18:00 1999-09-15 13:00 1999-09-15 America/Chicago
-#> 6 01011 1999-09-15 13:30 1999-09-15 08:30 1999-09-15 America/Chicago
+#> 1 01001 1999-09-15 21:15 1999-09-15 16:15 1999-09-15 America/Chicago
+#> 2 01003 1999-09-15 17:30 1999-09-15 12:30 1999-09-15 America/Chicago
+#> 3 01005 1999-09-15 20:00 1999-09-15 15:00 1999-09-15 America/Chicago
+#> 4 01007 1999-09-15 22:00 1999-09-15 17:00 1999-09-15 America/Chicago
+#> 5 01009 1999-09-16 00:15 1999-09-15 19:15 1999-09-15 America/Chicago
+#> 6 01011 1999-09-15 20:30 1999-09-15 15:30 1999-09-15 America/Chicago
+```
 
+``` r
 to_plot <- select(floyd, fips, local_date) %>%
   mutate(fips = as.numeric(fips))%>%
   dplyr::rename(region = fips, value = local_date)
@@ -205,7 +216,7 @@ a$set_zoom(eastern_states)
 a$render()
 ```
 
-![](README-unnamed-chunk-12-1.png)
+![](README-unnamed-chunk-15-1.png)
 
 References
 ----------
