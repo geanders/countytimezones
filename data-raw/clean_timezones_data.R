@@ -41,7 +41,8 @@ county_df <- read.csv("http://www2.census.gov/geo/docs/reference/codes/files/nat
          county = tolower(county))
 
 county_df[county_df$state == "AK" &
-            county_df$county %in% c("aleutians west census area"),
+            county_df$county %in% c("aleutians west census area",
+                                    "aleutians east borough"),
           "tz"] <- "America/Adak"
 county_df[county_df$state == "AK" &
             county_df$county %in% c("yakutat city and borough"),
@@ -59,7 +60,11 @@ county_df[county_df$state == "AK" &
                                     "ketchikan gateway borough",
                                     "prince of wales-hyder census area"),
           "tz"] <- "America/Sitka"
-# Need "Alaska/Nome" for west of 162 degrees
+county_df[county_df$state == "AK" &
+            county_df$county %in% c("bethel census area",
+                                    "nome census area",
+                                    "wade hampton census area"),
+          "tz"] <- "America/Nome"
 county_df[county_df$state == "FL" &
             county_df$county %in% paste(c("bay", "calhoun", "escambia", "gulf",
                                           "holmes", "jackson", "okaloosa",
