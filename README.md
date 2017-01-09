@@ -1,5 +1,5 @@
 
-[![Travis-CI Build Status](https://travis-ci.org/geanders/countytimezones.svg?branch=master)](https://travis-ci.org/geanders/countytimezones)
+[![Travis-CI Build Status](https://travis-ci.org/geanders/countytimezones.svg?branch=master)](https://travis-ci.org/geanders/countytimezones) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/weathermetrics)](https://cran.r-project.org/package=weathermetrics)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 Aims of the package
@@ -127,6 +127,14 @@ to_plot <- example_df %>%
 a <- CountyChoropleth$new(to_plot)
 a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
 a$render()
+#> Warning: `panel.margin` is deprecated. Please use `panel.spacing` property
+#> instead
+
+#> Warning: `panel.margin` is deprecated. Please use `panel.spacing` property
+#> instead
+
+#> Warning: `panel.margin` is deprecated. Please use `panel.spacing` property
+#> instead
 ```
 
 ![](README-unnamed-chunk-10-1.png)
@@ -146,6 +154,14 @@ to_plot <- example_df2 %>%
 a <- CountyChoropleth$new(to_plot)
 a$ggplot_scale <- scale_fill_brewer(type = "qual", drop = FALSE)
 a$render()
+#> Warning: `panel.margin` is deprecated. Please use `panel.spacing` property
+#> instead
+
+#> Warning: `panel.margin` is deprecated. Please use `panel.spacing` property
+#> instead
+
+#> Warning: `panel.margin` is deprecated. Please use `panel.spacing` property
+#> instead
 ```
 
 ![](README-unnamed-chunk-11-1.png)

@@ -17,6 +17,7 @@ references:
 ---
 
 [![Travis-CI Build Status](https://travis-ci.org/geanders/countytimezones.svg?branch=master)](https://travis-ci.org/geanders/countytimezones)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/weathermetrics)](https://cran.r-project.org/package=weathermetrics)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
